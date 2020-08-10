@@ -1,0 +1,79 @@
+{
+	"ipcMode": null,
+	"executionRoleArn": null,
+	"containerDefinitions": [
+		{
+			"dnsSearchDomains": null,
+			"environmentFiles": null,
+			"logConfiguration": null,
+			"entryPoint": null,
+			"portMappings": [
+				{
+					"hostPort": 8080,
+					"protocol": "tcp",
+					"containerPort": 8080
+				}
+			],
+			"command": null,
+			"linuxParameters": null,
+			"cpu": 0,
+			"environment": [],
+			"resourceRequirements": null,
+			"ulimits": null,
+			"dnsServers": null,
+			"mountPoints": [],
+			"workingDirectory": null,
+			"secrets": null,
+			"dockerSecurityOptions": null,
+			"memory": 256,
+			"memoryReservation": null,
+			"volumesFrom": [],
+			"stopTimeout": null,
+			"image": "981794644853.dkr.ecr.us-east-2.amazonaws.com/quarkus-github",
+			"startTimeout": null,
+			"firelensConfiguration": null,
+			"dependsOn": null,
+			"disableNetworking": null,
+			"interactive": null,
+			"healthCheck": null,
+			"essential": true,
+			"links": null,
+			"hostname": null,
+			"extraHosts": null,
+			"pseudoTerminal": null,
+			"user": null,
+			"readonlyRootFilesystem": null,
+			"dockerLabels": null,
+			"systemControls": null,
+			"privileged": null,
+			"name": "quarkus-github"
+		}
+	],
+	"placementConstraints": [],
+	"memory": null,
+	"taskRoleArn": null,
+	"compatibilities": [
+		"EC2"
+	],
+	"taskDefinitionArn": "arn:aws:ecs:us-east-2:981794644853:task-definition/quarkus-github:1",
+	"family": "quarkus-github",
+	"requiresAttributes": [
+		{
+			"targetId": null,
+			"targetType": null,
+			"value": null,
+			"name": "com.amazonaws.ecs.capability.ecr-auth"
+		}
+	],
+	"pidMode": null,
+	"requiresCompatibilities": [
+		"EC2"
+	],
+	"networkMode": null,
+	"cpu": null,
+	"revision": 1,
+	"status": "ACTIVE",
+	"inferenceAccelerators": null,
+	"proxyConfiguration": null,
+	"volumes": []
+}
