@@ -1,0 +1,69 @@
+image: maven:3.6.3-openjdk-11
+
+variables:
+  MAVEN_OPTS: >-
+    -Dmaven.repo.local=.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true
+  MAVEN_CLI_OPTS: >-
+    --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true
+    -DdeployAtEnd=true
+  CI_AWS_ECS_CLUSTER: siventh-sustainability-simulation-backend
+  CI_AWS_ECS_SERVICE: siventh-sustainability-simulation-backend-service
+  CI_AWS_REGISTRY_IMG: 981794644853.dkr.ecr.us-east-2.amazonaws.com/siventh-sustainability-simulation-backend
+
+cache:
+  paths:
+    - .m2/repository
+    - target
+
+before_script:
+  - >-
+    echo " ------------------------------- Global > Before Script
+    ------------------------- ------"
+  - echo $CI_COMMIT_BRANCH
+
+stages:
+  - compile
+  - build
+  - deploy
+
+compile-project:
+  stage: compile
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq build-essential libz-dev zlib1g-dev
+    - ls -la
+    - chmod +x ./mvnw
+  script:
+    - echo "Building native app."
+    - ./mvnw package
+
+kaniko-build-docker:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  stage: build
+  variables:
+    REGISTRY: $CI_AWS_REGISTRY_IMG
+  before_script:
+    - ls -la
+  only:
+    - master
+  script:
+    # see https://github.com/GoogleContainerTools/kaniko/issues/1227
+    - mkdir -p /kaniko/.docker
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - /kaniko/executor --cache=true --context $CI_PROJECT_DIR --dockerfile ${CI_PROJECT_DIR}/src/main/docker/Dockerfile.jvm --destination $REGISTRY:$CI_COMMIT_SHORT_SHA --destination $REGISTRY:latest
+
+deploy:
+  image: python:3.8
+  stage: deploy
+  only:
+    - master
+  before_script:
+    - pip install ecs-deploy
+  needs:
+    - kaniko-build-docker
+  script:
+    - ecs deploy $CI_AWS_ECS_CLUSTER $CI_AWS_ECS_SERVICE -t $CI_COMMIT_SHORT_SHA --timeout 600
