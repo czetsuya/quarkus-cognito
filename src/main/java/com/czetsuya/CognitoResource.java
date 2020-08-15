@@ -20,13 +20,26 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 public class CognitoResource {
 
 	@Inject
-	private JsonWebToken jwt;
+	JsonWebToken jwt;
+
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String hello() {
+		return "Hello World!";
+	}
+
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("hello")
+	public String helloWorld() {
+		return "Hello EC2 x 8";
+	}
 
 	@GET()
 	@Path("permit-all")
 	@PermitAll
 	@Produces(MediaType.TEXT_PLAIN)
-	public String hello(@Context SecurityContext ctx) {
+	public String permitAll(@Context SecurityContext ctx) {
 		Principal caller = ctx.getUserPrincipal();
 		String name = caller == null ? "anonymous" : caller.getName();
 		boolean hasJWT = jwt.getClaimNames() != null;
@@ -39,7 +52,7 @@ public class CognitoResource {
 	@Path("roles-allowed")
 	@RolesAllowed({ "Creative" })
 	@Produces(MediaType.TEXT_PLAIN)
-	public String helloRolesAllowed(@Context SecurityContext ctx) {
+	public String rolesAllowed(@Context SecurityContext ctx) {
 		System.out.println("x: " + jwt.getGroups());
 		System.out.println("" + jwt.getClaim("username"));
 		System.out.println("" + jwt.getClaim("cognito:groups"));
